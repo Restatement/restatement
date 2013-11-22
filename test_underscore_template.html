@@ -1,0 +1,48 @@
+<html>
+<head>
+    <script src="lib/jquery-1.10.2.min.js"></script>
+    <script src="lib/underscore.js"></script>
+    <script>
+    $(document).ready(function() {
+        var templateHTML = document.querySelector('#template').innerHTML;
+        var blah = {"tree":{
+                                "children": [],
+                                "item": "a",
+                                "text": "The name and address of the permittee."
+                            }};
+        console.log(_.template(templateHTML,blah));
+    });
+    </script>
+</head>
+<body>
+<script id="template" type="text/template">
+<div class="clause" <% if (tree.heading) { %> data-heading = "<%= tree.heading %>" <% } %> >
+
+    <% if (tree.item && tree.item != '<only>') { %>
+        <% if (tree.heading) { %>
+            <span class="clause-item-container">
+                <span class="clause-item"><%= tree.item %></span>
+            </span>
+        <%} else { %>
+            <span class="clause-item clause-item-inline">
+                <%= tree.item %>
+            </span>
+        <% } %>
+    <% } %>
+
+    <span class="clause-text">
+        <% if (tree.amended) { %>
+            <button data-toggle="popover" data-content="<%= tree.amended %>" data-placement="bottom" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-edit"></span>
+            </button>
+        <% } %>
+        <%= tree.text %>
+    </span>
+
+    <% if (tree.children && tree.children.length > 0)  { %>
+        <div class="clause-children"></div>
+    <% } %>
+</div>
+</script>
+</body>
+</html>

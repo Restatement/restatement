@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>Restatement Viewer</title>
+<script src="{{ url_for('static', filename='lib/underscore.js') }}"></script>
+<script src="{{ url_for('static', filename='lib/jquery-1.10.2.min.js') }}"></script>
+<script src="{{ url_for('static', filename='lib/lunr.js') }}"></script>
+<script src="{{ url_for('static', filename='lib/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='viewer.js') }}"></script>
+
+<style>
+    @font-face {
+    font-family: 'fira sans ot';
+
+    src: url('fonts/FiraSans-Regular.woff') format('woff')
+    }
+
+    .legal-code {
+        font-family: "fira sans ot", "helvetica", sans-serif;
+        font-size:14pt;
+        max-width:40em;
+        margin-right: auto;
+        margin-left: auto;
+        margin-top: 50px;
+    }
+
+    .clause-item-container  {
+        position: relative;
+        left:-200px;
+    }
+
+    .clause-item-inline {
+        margin:10px;
+        margin-bottom: 10px;
+        padding:2px;
+        border: 1px black solid;
+        left:-30px;
+        position: relative;
+        border-radius:5px;
+    }
+
+    .index-mode .clause[data-heading="section"] {
+        cursor: pointer
+    }
+
+    .clause[data-heading="section"] > .clause-container .clause-item {
+        position: absolute;
+        
+        font-size:10pt;
+        background-color: white;
+
+        width:120px;
+    }
+
+    .clause[data-heading="article"] > .clause-container > .clause-text {
+        font-family:'Montserrat',sans-serif;
+        font-weight:bold;
+    }
+
+    .clause-text {
+        position: relative;
+    }
+
+    .clause[data-heading="section"] > .clause-container > .clause-text {
+        font-family:'Montserrat',sans-serif;
+        font-weight:bold;
+
+        /*position: relative;*/
+        left:30px;
+        text-align: left;
+    }
+
+    .clause-item {
+        font-family:'Montserrat',sans-serif;
+        font-weight:bold;
+
+    }
+
+    .clause-children {
+        margin-left:30px;
+    }
+
+    /*.clause-item {
+        background-color: #ccc;
+    }*/
+
+    .clause {
+        margin-bottom:25px;
+        padding:0px;
+    }
+
+    #full-mode-btn {
+        display:none;
+    }
+
+    #mode-btns {
+        top:10px;
+        left:10px;
+        position: fixed;
+    }
+
+    #law_menu {
+        display:none;
+    }
+
+    .hover-icon {
+        opacity: 0.6;
+        cursor:pointer;
+    }
+
+    .hover-icon:hover {
+        opacity: 1.0;
+    }    
+
+    .direct-link {
+        position: absolute;
+        left:-30px;
+        /*margin-left:-30px;*/
+    }
+
+    .direct-link {
+        visibility: hidden;
+    }
+
+    .clause-container:hover .direct-link {
+        visibility: visible;
+    }
+
+    .popover {
+        width:500px;
+        font-weight: normal;
+        font-size: 12pt;
+    }
+
+    .index-mode .clause {
+        margin-bottom: 5px;
+    }
+
+    .index-mode .clause[data-heading="text"] {
+        display: none;
+    }
+    .index-mode .clause[data-heading="section"].collapsed .clause {
+        display: block;
+    }
+</style>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href='{{ url_for('static', filename='lib/bootstrap.min.css') }}' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+    <div id="mode-btns">
+        <button id="index-mode-btn" class="mode-btn btn btn-default btn-lg"><span class="glyphicon glyphicon-th-list"/></button>
+        <button id="full-mode-btn" class="mode-btn btn btn-default btn-lg"><span class="glyphicon glyphicon glyphicon-align-justify"/></button>
+        <button id="search-mode-btn" class="mode-btn  btn btn-default btn-lg"><span class="glyphicon glyphicon glyphicon-search"/></button>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div id="law_menu">
+                <h2>Restatement Viewer</h2>
+                <div>I'm a menu!</div>
+            </div>
+            <div class="col-md-12">
+                <div class="legal-code"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script id="clauseTemplate" type="text-template">
+<div class="clause" <% if (tree.heading) { %> data-heading = "<%= tree.heading %>" <% } %> >
+
+    <div class="clause-container">
+        <% if (tree.item && tree.item != '<only>') { %>
+            <% if (tree.heading != 'text') { %>
+                <span class="clause-item-container">
+                    <span class="clause-item">
+                        <%= tree.item %>
+                    </span>
+                </span>
+            <%} else { %>
+                <span class="clause-item clause-item-inline"><%= tree.item %></span>
+            <% } %>
+        <% } %>
+
+        <span class="clause-text">
+            <span class="direct-link">
+                <span class="hover-icon glyphicon glyphicon-link"></span>
+            </span>
+            <%= tree.text.trim() %>
+
+            <% if (tree.amended) { %>
+                <span class="amendment-popup hover-icon" data-toggle="popover" rel="amendment" data-content="<%= tree.amended %>" data-placement="bottom">
+                    <span class="glyphicon glyphicon-edit"></span>
+                </span>
+            <% } %>
+        </span>
+    </div>
+
+    <% if (tree.children && tree.children.length > 0)  { %>
+        <div class="clause-children"></div>
+    <% } %>
+
+</div>
+</script>
+
+</html>
