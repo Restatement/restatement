@@ -14,7 +14,7 @@
     @font-face {
     font-family: 'fira sans ot';
 
-    src: url('fonts/FiraSans-Regular.woff') format('woff')
+    src: url('{{ url_for('static', filename='fonts/FiraSans-Regular.woff') }}') format('woff')
     }
 
     .legal-code {
@@ -164,7 +164,8 @@
                 <div>I'm a menu!</div>
             </div>
             <div class="col-md-12">
-                <div class="legal-code"></div>
+                <div class="legal-code" {% if base_clause %} data-base-clause="{{ base_clause }}" {% endif %}>
+                </div>
             </div>
         </div>
     </div>
@@ -187,9 +188,11 @@
         <% } %>
 
         <span class="clause-text">
-            <span class="direct-link">
-                <span class="hover-icon glyphicon glyphicon-link"></span>
-            </span>
+            <% if (tree.children.length > 0) { %>
+                <a href="/clause/<%= tree.uid %>" class="direct-link">
+                    <span class="hover-icon glyphicon glyphicon-link"></span>
+                </a>
+            <% } %>
             <%= tree.text.trim() %>
 
             <% if (tree.amended) { %>

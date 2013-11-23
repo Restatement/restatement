@@ -1,8 +1,9 @@
 var viewer;
 $(document).ready(function() {
     viewer = new Viewer($('.legal-code').get(0),$('#law_menu').get(0));
+    var base_clause = $('.legal-code').attr('data-base-clause');
     $.ajax({
-        url: 'sfmuni.json',
+        url: '/sfmuni.json' + (base_clause ? '?base=' + base_clause : ''),
         dataType: 'JSON',
         success: function(data) {
             viewer.setTitle(data.title);
